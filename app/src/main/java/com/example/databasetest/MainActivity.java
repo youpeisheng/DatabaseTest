@@ -3,12 +3,15 @@ package com.example.databasetest;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity {
+    private String TAG="MainActivity";
     private MyDatabaseHelper dbHelper;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +44,48 @@ public class MainActivity extends AppCompatActivity {
                 values.put("pages",150);
                 values.put("price",19.95);
                 db.insert("Book",null,values);
+            }
+        });
+        Button updateData=(Button) findViewById(R.id.update_data);
+        updateData.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SQLiteDatabase db=dbHelper.getWritableDatabase();
+                ContentValues values=new ContentValues();
+                values.put("price",10.99);
+                db.update("Book",values,"name=?",new String[]{"The Da Vinci Code"});
+
+            }
+        });
+        Button deleteButton= (Button) findViewById(R.id.delete_data);
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SQLiteDatabase db=dbHelper.getWritableDatabase();
+                db.delete("Book","pages > ?",new String[]{"400"});
+            }
+        });
+        Button queryButton=(Button) findViewById(R.id.query_data);
+        queryButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SQLiteDatabase db=dbHelper.getWritableDatabase();
+                //查询Book表中所有数据
+                Cursor cursor=db.query("Book",null,null,null,null,null,null);
+                if(cursor.moveToFirst()){
+                    do{
+                        //遍历Cursor 对象 ，取出数据并打印
+                        String name=cursor.getString(cursor.getColumnIndex("name"));
+                        String author=cursor.getString(cursor.getColumnIndex("author"));
+                        int pages=cursor.getInt(cursor.getColumnIndex("pages"));
+                        double price=cursor.getDouble(cursor.getColumnIndex("price"));
+                        Log.d(TAG,"Book name is "+name);
+                        Log.d(TAG,"Book author is "+author);
+                        Log.d(TAG,"Book pages is "+pages);
+                        Log.d(TAG,"Book price is "+price);
+                    }while (cursor.moveToNext());
+                }
+                cursor.close();
             }
         });
     }
