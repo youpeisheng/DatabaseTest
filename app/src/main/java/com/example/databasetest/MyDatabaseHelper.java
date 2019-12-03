@@ -4,7 +4,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.widget.Toast;
-
+//测试
 public class MyDatabaseHelper extends SQLiteOpenHelper {
     public static final String CREATE_BOOK="create table Book("
             +"id integer primary key autoincrement, "
